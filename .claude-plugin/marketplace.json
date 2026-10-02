@@ -1,0 +1,13 @@
+{
+  "name": "pragmata-ai",
+  "owner": {
+    "name": "ejector"
+  },
+  "plugins": [
+    {
+      "name": "plan",
+      "source": "./plugins/plan",
+      "description": "Plan and execute coding work step by step using autonomous agents"
+    }
+  ]
+}

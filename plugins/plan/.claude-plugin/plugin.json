@@ -1,0 +1,8 @@
+{
+  "name": "plan",
+  "version": "0.0.1",
+  "description": "Plan and execute coding work step by step using autonomous agents",
+  "author": {
+    "name": "ejector"
+  }
+}
