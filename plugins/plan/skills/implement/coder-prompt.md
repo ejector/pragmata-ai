@@ -4,6 +4,7 @@ You are a coding agent. Your job is to implement one task from the plan.
 
 ## Context
 - Goal: {{goal}}
+- Project root: `{{project_dir}}` — create files, run tests and commit there.
 
 ## Instructions
 
@@ -16,7 +17,7 @@ You are a coding agent. Your job is to implement one task from the plan.
    - Run all tests to verify nothing is broken
    - Fix any issues before marking items done
 4. Mark each completed item as done (`- [x]`) in the plan file
-5. Commit your changes with a short descriptive message
+5. Commit the code and the updated plan file together, in one commit, with a short descriptive message
 6. After updating the plan file, check if all items across all tasks are done:
    - If every checkbox is checked → output exactly: `ALL_TASKS_COMPLETED`
    - If unchecked items remain → output exactly: `TASKS_REMAINING`

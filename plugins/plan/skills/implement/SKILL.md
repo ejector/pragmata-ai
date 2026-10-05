@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Plan and execute coding work step by step using autonomous agents. Use when the user asks to plan and implement a feature end-to-end.
+description: Plan and execute coding work step by step using autonomous agents. Use when the user asks to plan and implement a feature or a new project end-to-end.
 ---
 
 # Plan and execute coding work step by step
@@ -59,6 +59,8 @@ Detect the current branch name (`git branch --show-current`).
 - If already on a non-default branch: continue on it — assume the user is intentionally working on this branch.
 
 ### Step 8: Save the plan
+
+#### 8a: Write the plan file
 Create the directory `docs/plans/` if it doesn't exist, then write the approved plan to `{{PLAN_FILE}}` using this format:
 
 ```markdown
@@ -85,12 +87,16 @@ Language, framework, testing tools, relevant details.
 - [ ] Test error cases
 ```
 
+#### 8b: Commit the plan
+Commit the plan file with the message `Add plan: <task name>`.
+
 ### Step 9: Execute via subagents
 
 #### Coder agent prompt
 This skill bundles [coder-prompt.md](coder-prompt.md) — a prompt template for the coding agent. Before each run, read the template and fill in the placeholders:
 - `{{goal}}` — brief description of the overall goal
 - `{{plan_path}}` — path to the plan file
+- `{{project_dir}}` — absolute path to the project root
 
 #### Running the loop
 For each iteration, spawn a `general-purpose` subagent using the `Agent` tool with the filled-in coder prompt.
@@ -102,31 +108,26 @@ After each run, check the agent's output:
 
 Continue the loop until all tasks are completed or a hard failure occurs. If an agent fails repeatedly (3+ times on the same task), stop and ask the user for guidance.
 
-### Step 9.5: Review via orchestrator
+### Step 10: Review via orchestrator
 
 After all coding tasks are completed, launch a review orchestrator agent to review the implemented code.
 
-Read the orchestrator prompt from [agents/review-orchestrator.md](agents/review-orchestrator.md) and spawn a `general-purpose` subagent using the `Agent` tool with that prompt.
+Read the orchestrator prompt from [agents/review-orchestrator.md](agents/review-orchestrator.md), fill in the placeholders, and spawn a `general-purpose` subagent using the `Agent` tool with the filled-in prompt:
+- `{{AGENTS_DIR}}` — path to this skill's `agents/` directory. Use the absolute path: the orchestrator runs in a separate context and cannot resolve paths relative to this skill.
+- `{{PROJECT_DIR}}` — absolute path to the root of the project being implemented (the directory containing `{{PLAN_FILE}}`'s `docs/` folder).
 
-The orchestrator will:
-- Get the diff against the default branch
-- Launch 5 reviewer agents in parallel (bug, style, security, performance, quality)
-- Collect and deduplicate findings
-- Fix confirmed issues
-- Run tests and fix failures (up to 5 attempts)
-- Report final status
+Wait for the orchestrator to finish and read its final message:
+- If it recommends another review pass, run it again. Up to 5 passes in total; if the 5th pass still recommends another one, stop and ask the user for guidance.
+- If it says no further review is needed, continue to Step 11.
+- If it could not run the review (no changes, no reviewer files, ...), stop and ask the user for guidance.
 
-Wait for the orchestrator to finish. If it reports remaining test failures, stop and ask the user for guidance.
-
-If the orchestrator fixed any issues, run it a **second time** to verify that the fixes didn't introduce new problems. On the second pass the orchestrator fixes any new issues as usual. Do not run a third pass — continue to Step 10 regardless of the outcome.
-
-### Step 10: Verify
+### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
 - Report results to the user: what was built, what files were created/modified, and any issues encountered
 
 ## Important rules
 - Agents run **sequentially**, not in parallel — each builds on prior work
-- Each agent gets full context: the overall plan, what's been done, and its specific task
+- Each agent gets the goal, the plan file and the project root, and picks the first unfinished task itself
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing
