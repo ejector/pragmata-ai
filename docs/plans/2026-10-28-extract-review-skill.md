@@ -16,8 +16,8 @@ Extract the code review out of the `implement` skill into a standalone `review` 
 ## Tasks
 
 ### Task 1: Create the review skill
-- [ ] `git mv` the five `plugins/plan/skills/implement/agents/*-reviewer.md` files to `plugins/plan/skills/review/agents/` without changing their content
-- [ ] Create `plugins/plan/skills/review/SKILL.md` with frontmatter (`name: review`, a `description` saying it reviews the current branch's changes with parallel reviewer agents and reports issues without fixing them). Body: steps 1–7 of `implement/agents/review-orchestrator.md`, adapted to run in the main context (no orchestrator subagent):
+- [x] `git mv` the five `plugins/plan/skills/implement/agents/*-reviewer.md` files to `plugins/plan/skills/review/agents/` without changing their content
+- [x] Create `plugins/plan/skills/review/SKILL.md` with frontmatter (`name: review`, a `description` saying it reviews the current branch's changes with parallel reviewer agents and reports issues without fixing them). Body: steps 1–7 of `implement/agents/review-orchestrator.md`, adapted to run in the main context (no orchestrator subagent):
   - optional argument: base branch or commit to diff against; if not given, detect the default branch as the orchestrator does now
   - reviewers are discovered in this skill's own `agents/` directory; pass its absolute path where needed
   - keep the common prompt block, the parallel foreground launch, parsing, deduplication and sorting exactly as they are now
