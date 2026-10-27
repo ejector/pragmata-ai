@@ -128,12 +128,15 @@ For each pass:
    - `BLOCKED: ...` → stop and ask the user for guidance
    - `Another review pass is recommended.` → run the next pass
    - `No further review needed.` → move to Step 11
+   - Anything else → stop and ask the user for guidance
+
+   Keep the skipped issues the fixer listed, with their reasons, for the final report.
 
 If the 5th pass still recommends another one, stop and ask the user for guidance.
 
 ### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
-- Report results to the user: what was built, what files were created/modified, and any issues encountered
+- Report results to the user: what was built, what files were created/modified, any issues encountered, and every review issue the fixers skipped, with its reason
 
 ## Important rules
 - Coder and fixer agents run **sequentially**, not in parallel — each builds on prior work

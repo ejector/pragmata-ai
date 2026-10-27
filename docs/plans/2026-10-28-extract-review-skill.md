@@ -52,27 +52,27 @@ You are a fixer agent. Your job is to fix the issues found by the code review.
    - Otherwise, skip tests and note that no test runner was detected.
 
    If tests fail, analyze the failures, fix the code, and rerun. Keep iterating until **all tests pass**.
-3. Commit the fixes with a short descriptive message.
-4. Print `Fixed N issue(s), all tests passing.` and list skipped issues with reasons, if any.
+3. If any issues were fixed, commit the fixes with a short descriptive message.
+4. Print `Fixed N issue(s), all tests passing.`, or `Fixed N issue(s), no test runner detected.` if tests were skipped. List skipped issues with reasons, if any.
+5. State whether another review pass is needed. The reviewers saw the code before your fixes; nobody has reviewed the fixes themselves.
 
-Then state whether another review pass is needed. The reviewers saw the code before your fixes; nobody has reviewed the fixes themselves.
+   Another pass is recommended if any of:
+   - a fix changed logic: conditions, control flow, algorithms, error handling
+   - a fix changed a public interface (signatures, exported names, output format) and spread across several files
+   - a fix touched files that were not in the original diff
+   - tests failed after the fixes and needed further fixing
+   - the review report has warnings about unparseable reviewer output (its findings may be lost)
 
-Another pass is recommended if any of:
-- a fix changed logic: conditions, control flow, algorithms, error handling
-- a fix changed a public interface (signatures, exported names, output format) and spread across several files
-- a fix touched files that were not in the original diff
-- tests failed after the fixes and needed further fixing
-- the review report has warnings about unparseable reviewer output (its findings may be lost)
+   Otherwise, no further pass is needed if:
+   - nothing was fixed (all issues were skipped)
+   - all fixes were cosmetic: comments, docs, local names, formatting, dead code removal
+   - every fix was local, a few lines, and tests passed on the first run
 
-No further pass is needed if:
-- all fixes were cosmetic: comments, docs, local names, formatting, dead code removal
-- every fix was local, a few lines, and tests passed on the first run
-
-End with exactly one of:
-```
-Another review pass is recommended.
-No further review needed.
-```
+   End with exactly one of:
+   ```
+   Another review pass is recommended.
+   No further review needed.
+   ```
 
 ## Rules
 - Fix only the reported issues; do not modify unrelated code
