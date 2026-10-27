@@ -85,6 +85,6 @@ No further review needed.
 - [x] Add to "Important rules" in `implement/SKILL.md`: at the start of every reply during the workflow, state the current step, e.g. `**Step 3: Architecture design**`
 
 ### Task 4: Version and descriptions
-- [ ] `plugins/plan/.claude-plugin/plugin.json`: set `version` to `0.0.2`; update `description` to mention the review skill
-- [ ] `.claude-plugin/marketplace.json`: update the plan plugin's `description` the same way
-- [ ] Run `claude plugin validate .` from the repo root and make sure it passes
+- [x] `plugins/plan/.claude-plugin/plugin.json`: set `version` to `0.0.2`; update `description` to mention the review skill
+- [x] `.claude-plugin/marketplace.json`: update the plan plugin's `description` the same way
+- [x] Run `claude plugin validate .` from the repo root and make sure it passes
