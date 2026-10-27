@@ -25,7 +25,7 @@ Extract the code review out of the `implement` skill into a standalone `review` 
   - state explicitly: do not edit files, do not run tests, do not commit
 
 ### Task 2: Add the fixer prompt to implement
-- [ ] Create `plugins/plan/skills/implement/fixer-prompt.md` with exactly this content (agreed with the user):
+- [x] Create `plugins/plan/skills/implement/fixer-prompt.md` with exactly this content (agreed with the user):
 
 ````markdown
 # Fixer Agent Prompt Template
