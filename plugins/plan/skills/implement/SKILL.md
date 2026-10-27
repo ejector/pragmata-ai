@@ -108,18 +108,27 @@ After each run, check the agent's output:
 
 Continue the loop until all tasks are completed or a hard failure occurs. If an agent fails repeatedly (3+ times on the same task), stop and ask the user for guidance.
 
-### Step 10: Review via orchestrator
+### Step 10: Review and fix
 
-After all coding tasks are completed, launch a review orchestrator agent to review the implemented code.
+After all coding tasks are completed, review and fix the implemented code in a loop of up to 5 passes.
 
-Read the orchestrator prompt from [agents/review-orchestrator.md](agents/review-orchestrator.md), fill in the placeholders, and spawn a `general-purpose` subagent using the `Agent` tool with the filled-in prompt:
-- `{{AGENTS_DIR}}` — path to this skill's `agents/` directory. Use the absolute path: the orchestrator runs in a separate context and cannot resolve paths relative to this skill.
-- `{{PROJECT_DIR}}` — absolute path to the root of the project being implemented (the directory containing `{{PLAN_FILE}}`'s `docs/` folder).
+#### Fixer agent prompt
+This skill bundles [fixer-prompt.md](fixer-prompt.md) — a prompt template for the fixer agent. Before each fixer run, read the template and fill in the placeholders:
+- `{{issues}}` — the full review report from `plan:review`
+- `{{project_dir}}` — absolute path to the project root
 
-Wait for the orchestrator to finish and read its final message:
-- If it recommends another review pass, run it again. Up to 5 passes in total; if the 5th pass still recommends another one, stop and ask the user for guidance.
-- If it says no further review is needed, continue to Step 11.
-- If it could not run the review (no changes, no reviewer files, ...), stop and ask the user for guidance.
+#### Running the loop
+For each pass:
+1. Invoke the `plan:review` skill using the `Skill` tool and read its report.
+   - Ends with `No issues found.` → move to Step 11
+   - Ends with `N issue(s) found.` → continue with the fixer
+   - Could not run the review (e.g. no reviewer files found) → stop and ask the user for guidance
+2. Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fixer prompt, and check its output:
+   - `BLOCKED: ...` → stop and ask the user for guidance
+   - `Another review pass is recommended.` → run the next pass
+   - `No further review needed.` → move to Step 11
+
+If the 5th pass still recommends another one, stop and ask the user for guidance.
 
 ### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
@@ -131,3 +140,4 @@ Wait for the orchestrator to finish and read its final message:
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing
+- At the start of every reply during the workflow, state the current step, e.g. `**Step 3: Architecture design**`

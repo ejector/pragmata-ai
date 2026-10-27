@@ -80,9 +80,9 @@ No further review needed.
 ````
 
 ### Task 3: Rewrite the review step in implement
-- [ ] Rewrite Step 10 of `plugins/plan/skills/implement/SKILL.md` as a loop of up to 5 passes: invoke `plan:review` via the Skill tool; on `No issues found.` go to Step 11; otherwise read `fixer-prompt.md`, fill `{{issues}}` with the full review report and `{{project_dir}}`, and spawn a `general-purpose` subagent with it. On `BLOCKED: ...` stop and ask the user; on `Another review pass is recommended.` run the next pass; on `No further review needed.` go to Step 11. If the 5th pass still recommends another one, stop and ask the user
-- [ ] Delete `plugins/plan/skills/implement/agents/review-orchestrator.md` and the then-empty `implement/agents/` directory; remove all remaining references to the orchestrator and `{{AGENTS_DIR}}` from `implement/SKILL.md`
-- [ ] Add to "Important rules" in `implement/SKILL.md`: at the start of every reply during the workflow, state the current step, e.g. `**Step 3: Architecture design**`
+- [x] Rewrite Step 10 of `plugins/plan/skills/implement/SKILL.md` as a loop of up to 5 passes: invoke `plan:review` via the Skill tool; on `No issues found.` go to Step 11; otherwise read `fixer-prompt.md`, fill `{{issues}}` with the full review report and `{{project_dir}}`, and spawn a `general-purpose` subagent with it. On `BLOCKED: ...` stop and ask the user; on `Another review pass is recommended.` run the next pass; on `No further review needed.` go to Step 11. If the 5th pass still recommends another one, stop and ask the user
+- [x] Delete `plugins/plan/skills/implement/agents/review-orchestrator.md` and the then-empty `implement/agents/` directory; remove all remaining references to the orchestrator and `{{AGENTS_DIR}}` from `implement/SKILL.md`
+- [x] Add to "Important rules" in `implement/SKILL.md`: at the start of every reply during the workflow, state the current step, e.g. `**Step 3: Architecture design**`
 
 ### Task 4: Version and descriptions
 - [ ] `plugins/plan/.claude-plugin/plugin.json`: set `version` to `0.0.2`; update `description` to mention the review skill
