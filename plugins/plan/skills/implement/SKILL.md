@@ -121,6 +121,7 @@ This skill bundles [fixer-prompt.md](fixer-prompt.md) — a prompt template for 
 For each pass:
 1. Invoke the `plan:review` skill using the `Skill` tool and read its report.
    - Ends with `No issues found.` → move to Step 11
+   - Ends with `No issues found, K reviewer(s) returned unparseable output.` → stop and ask the user for guidance
    - Ends with `N issue(s) found.` → continue with the fixer
    - Could not run the review (e.g. no reviewer files found) → stop and ask the user for guidance
 2. Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fixer prompt, and check its output:
@@ -135,8 +136,9 @@ If the 5th pass still recommends another one, stop and ask the user for guidance
 - Report results to the user: what was built, what files were created/modified, and any issues encountered
 
 ## Important rules
-- Agents run **sequentially**, not in parallel — each builds on prior work
-- Each agent gets the goal, the plan file and the project root, and picks the first unfinished task itself
+- Coder and fixer agents run **sequentially**, not in parallel — each builds on prior work
+- Each coder agent gets the goal, the plan file and the project root, and picks the first unfinished task itself
+- Each fixer agent gets the review report and the project root
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing

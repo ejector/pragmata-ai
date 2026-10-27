@@ -15,19 +15,19 @@ The reviewer definitions live in this skill's own `agents/` directory, one `*-re
 
 ## Arguments
 
-Optional: the base branch or commit to diff against. If given, use it as `DEFAULT_BRANCH` and skip the detection in step 1.
+Optional: the base branch or commit to diff against. If given, use it as `BASE` and skip the detection in step 1.
 
 ## Workflow
 
-### 1. Determine the default branch
+### 1. Determine the base to diff against
 
 If no base was given, detect the default branch:
 ```
 git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'
 ```
-If that fails, check which of `main` or `master` exists locally. Call it `DEFAULT_BRANCH`.
+If that fails, check which of `main` or `master` exists locally. Call the result `BASE`.
 
-Run `git diff --name-only $DEFAULT_BRANCH...HEAD` to check if there are changes. If the output is empty, print "No changes to review.", end with `No issues found.` and stop.
+Run `git diff --name-only $BASE...HEAD` to check if there are changes. If the output is empty, print "No changes to review.", end with `No issues found.` and stop.
 
 ### 2. Discover reviewers
 
@@ -37,15 +37,15 @@ If no files are found, print `No reviewer files found in AGENTS_DIR` (with the a
 
 ### 3. Build reviewer prompts
 
-For each reviewer file, read it and build the prompt in memory as: **the full contents of the file**, followed by the common block below. Replace `{{PROJECT_DIR}}` and `{{DEFAULT_BRANCH}}` in the block with the values you have. Do not write prompts or any other temporary files to disk.
+For each reviewer file, read it and build the prompt in memory as: **the full contents of the file**, followed by the common block below. Replace `{{PROJECT_DIR}}` and `{{BASE}}` in the block with the values you have. Do not write prompts or any other temporary files to disk.
 
 Common block:
 
 ```
 ## How to get the changes
 The project is at `{{PROJECT_DIR}}`. Run every command there.
-1. Run `git diff {{DEFAULT_BRANCH}}...HEAD` to get the diff of all changes on this branch.
-2. Run `git diff --name-only {{DEFAULT_BRANCH}}...HEAD` to get the list of changed files.
+1. Run `git diff {{BASE}}...HEAD` to get the diff of all changes on this branch.
+2. Run `git diff --name-only {{BASE}}...HEAD` to get the list of changed files.
 3. Read the full content of each changed file to understand the surrounding context.
 4. Review the diff within that context, using the focus defined above.
 
@@ -105,7 +105,11 @@ End with exactly one line:
 ```
 N issue(s) found.
 ```
-or, if no issues were found across all reviewers:
+or, if no issues were found but some reviewers returned unparseable output (K is the number of such reviewers):
+```
+No issues found, K reviewer(s) returned unparseable output.
+```
+or, if no issues were found across all reviewers and there are no warnings:
 ```
 No issues found.
 ```

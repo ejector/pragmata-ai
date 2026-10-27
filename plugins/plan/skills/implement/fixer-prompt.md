@@ -22,7 +22,7 @@ You are a fixer agent. Your job is to fix the issues found by the code review.
    - Otherwise, skip tests and note that no test runner was detected.
 
    If tests fail, analyze the failures, fix the code, and rerun. Keep iterating until **all tests pass**.
-3. Commit the fixes with a short descriptive message.
+3. If any issues were fixed, commit the fixes with a short descriptive message.
 4. Print `Fixed N issue(s), all tests passing.` and list skipped issues with reasons, if any.
 
 Then state whether another review pass is needed. The reviewers saw the code before your fixes; nobody has reviewed the fixes themselves.
@@ -35,6 +35,7 @@ Another pass is recommended if any of:
 - the review report has warnings about unparseable reviewer output (its findings may be lost)
 
 No further pass is needed if:
+- nothing was fixed (all issues were skipped)
 - all fixes were cosmetic: comments, docs, local names, formatting, dead code removal
 - every fix was local, a few lines, and tests passed on the first run
 
