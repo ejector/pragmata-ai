@@ -27,13 +27,13 @@ git remote show origin 2>/dev/null | grep 'HEAD branch' | awk '{print $NF}'
 ```
 If that fails, check which of `main` or `master` exists locally. Call the result `BASE`.
 
-Run `git diff --name-only {{BASE}}...HEAD` to check if there are changes. If the output is empty, print "No changes to review.", end with `No issues found.` and stop.
+Run `git diff --name-only BASE...HEAD` to check if there are changes. If the output is empty, print "No changes to review.", end with `No issues found.` and stop.
 
 ### 2. Discover reviewers
 
-Find all reviewer files matching `{{AGENTS_DIR}}/*-reviewer.md`. The reviewer name is the file name without the `-reviewer.md` suffix (e.g. `bug-reviewer.md` → `bug`).
+Find all reviewer files matching `AGENTS_DIR/*-reviewer.md`. The reviewer name is the file name without the `-reviewer.md` suffix (e.g. `bug-reviewer.md` → `bug`).
 
-If no files are found, print `No reviewer files found in {{AGENTS_DIR}}` (with the actual path) and stop.
+If no files are found, print `No reviewer files found in AGENTS_DIR` (with the actual path) and stop.
 
 ### 3. Build reviewer prompts
 
