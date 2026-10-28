@@ -78,7 +78,7 @@ If a reviewer's output contains lines that match neither the format nor `NO_ISSU
 
 ### 6. Deduplicate
 
-Merge issues that share the same file + line number, or that describe the same problem in different words. Keep the most descriptive version.
+Merge issues that describe the same problem in the same place, even if worded differently. Keep the most descriptive version. Keep different problems on the same line as separate issues.
 
 ### 7. Sort and report
 
@@ -100,6 +100,8 @@ Reviewer <name> returned unparseable output:
 ```
 
 Omit the `Warnings:` section if there are none.
+
+Count N and M after step 6; the header and the final line use the same N. Print nothing between the summary and the final line.
 
 End with exactly one line:
 ```
