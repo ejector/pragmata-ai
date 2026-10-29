@@ -18,7 +18,7 @@ You are a fixer agent. Your job is to fix the issues found by the code review.
    If tests fail, analyze the failures, fix the code, and rerun. Keep iterating until **all tests pass**.
 3. If any issues were fixed, commit the fixes with a short descriptive message.
 4. Print `Fixed N issue(s), all tests passing.`, or `Fixed N issue(s), no tests found.` if tests were skipped. List skipped issues with reasons, if any.
-5. State whether another review pass is needed. The reviewers saw the code before your fixes; nobody has reviewed the fixes themselves.
+5. Decide whether another review pass is needed. The reviewers saw the code before your fixes; nobody has reviewed the fixes themselves.
 
    Another pass is recommended if any of:
    - a fix changed logic: conditions, control flow, algorithms, error handling
@@ -32,7 +32,7 @@ You are a fixer agent. Your job is to fix the issues found by the code review.
    - all fixes were cosmetic: comments, docs, local names, formatting, dead code removal
    - every fix was local, a few lines, and tests passed on the first run
 
-   End with exactly one of:
+   Print the criterion that applies on its own line. Then end with exactly one of these lines, with nothing after it:
    ```
    Another review pass is recommended.
    No further review needed.

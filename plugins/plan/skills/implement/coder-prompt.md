@@ -18,9 +18,9 @@ You are a coding agent. Your job is to implement one task from the plan.
    - Fix any issues before marking items done
 4. Mark each completed item as done (`- [x]`) in the plan file
 5. Commit the code and the updated plan file together, in one commit, with a short descriptive message
-6. After updating the plan file, check if all items across all tasks are done:
-   - If every checkbox is checked → output exactly: `ALL_TASKS_COMPLETED`
-   - If unchecked items remain → output exactly: `TASKS_REMAINING`
+6. Re-read the plan file and check whether any `- [ ]` items remain:
+   - None remain → end with exactly: `ALL_TASKS_COMPLETED`
+   - Some remain → end with exactly: `TASKS_REMAINING`
 
 ## Rules
 - Complete ONE entire Task section per run (all its checkboxes)

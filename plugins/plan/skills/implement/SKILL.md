@@ -91,17 +91,11 @@ Language, framework, testing tools, relevant details.
 Run `git rev-parse HEAD` and save the result as `START_SHA`. Commit the plan file with the message `Add plan: <task name>`.
 
 ### Step 9: Execute via subagents
+Run a subagent with the prompt from [coder-prompt.md](coder-prompt.md) with the placeholders filled in.
 
-#### 9a: Prepare the coder prompt
-Read [coder-prompt.md](coder-prompt.md) and fill in the placeholders:
-- `{{goal}}` — brief description of the overall goal
-- `{{plan_path}}` — path to the plan file
-- `{{project_dir}}` — absolute path to the project root
-
-#### 9b: Run a coder
-Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in coder prompt, and check its output:
+Check the last line of its output:
 - `ALL_TASKS_COMPLETED` → move to Step 10
-- `TASKS_REMAINING` → repeat 9b
+- `TASKS_REMAINING` → repeat Step 9
 - `BLOCKED: ...` → stop and ask the user for guidance
 
 If an agent fails 3+ times on the same task, stop and ask the user for guidance.
@@ -109,17 +103,17 @@ If an agent fails 3+ times on the same task, stop and ask the user for guidance.
 ### Step 10: Review and fix
 
 #### 10a: Review changes
-Invoke the `plan:review` skill using the `Skill` tool with `START_SHA` as the argument, and check the last line of its report:
+Run a subagent with the prompt from [review-prompt.md](review-prompt.md) with the placeholders filled in.
+
+Check the last line of the subagent's output:
 - `No issues found.` → move to Step 11
 - `N issue(s) found.` → go to 10b
 - Anything else → stop and ask the user for guidance
 
 #### 10b: Fix issues
-Read [fixer-prompt.md](fixer-prompt.md) and fill in the placeholders:
-- `{{issues}}` — the full review report from 10a
-- `{{project_dir}}` — absolute path to the project root
+Run a subagent with the prompt from [fixer-prompt.md](fixer-prompt.md) with the placeholders filled in. Keep the skipped issues it lists, with their reasons, for the final report.
 
-Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fixer prompt. Keep the skipped issues it lists, with their reasons, for the final report. Check its output:
+Check its output:
 - `BLOCKED: ...` → stop and ask the user for guidance
 - `Another review pass is recommended.` → go to 10a; if this was the 10th pass, stop and ask the user for guidance instead
 - `No further review needed.` → move to Step 11
@@ -131,7 +125,6 @@ Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fix
 
 ## Important rules
 - Coder and fixer agents run **sequentially**, not in parallel — each builds on prior work
-- Each coder agent gets the goal, the plan file and the project root, and picks the first unfinished task itself
 - Each fixer agent gets the review report and the project root
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
