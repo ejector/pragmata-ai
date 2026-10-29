@@ -1,6 +1,6 @@
 {
   "name": "plan",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Plan, execute, review coding work step by step using autonomous agents",
   "author": {
     "name": "ejector"
