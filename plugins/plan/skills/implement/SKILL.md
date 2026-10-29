@@ -20,7 +20,7 @@ If the user already provided a clear description, confirm your understanding and
 - If it's a greenfield project, research best practices and technologies relevant to the task.
 - Summarize what you found for the user.
 
-### Step 3: Architecture design
+### Step 3: Design the architecture
 Design or adapt the architecture for the task:
 - Identify components, data flow, interfaces, directory structure, and technology choices
 - For existing codebases, show how the new work fits into what's already there
@@ -88,51 +88,42 @@ Language, framework, testing tools, relevant details.
 ```
 
 #### 8b: Commit the plan
-Commit the plan file with the message `Add plan: <task name>`.
+Run `git rev-parse HEAD` and save the result as `START_SHA`. Commit the plan file with the message `Add plan: <task name>`.
 
 ### Step 9: Execute via subagents
 
-#### Coder agent prompt
-This skill bundles [coder-prompt.md](coder-prompt.md) — a prompt template for the coding agent. Before each run, read the template and fill in the placeholders:
+#### 9a: Prepare the coder prompt
+Read [coder-prompt.md](coder-prompt.md) and fill in the placeholders:
 - `{{goal}}` — brief description of the overall goal
 - `{{plan_path}}` — path to the plan file
 - `{{project_dir}}` — absolute path to the project root
 
-#### Running the loop
-For each iteration, spawn a `general-purpose` subagent using the `Agent` tool with the filled-in coder prompt.
-
-After each run, check the agent's output:
+#### 9b: Run a coder
+Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in coder prompt, and check its output:
 - `ALL_TASKS_COMPLETED` → move to Step 10
-- `TASKS_REMAINING` → spawn another agent with the same prompt
+- `TASKS_REMAINING` → repeat 9b
 - `BLOCKED: ...` → stop and ask the user for guidance
 
-Continue the loop until all tasks are completed or a hard failure occurs. If an agent fails repeatedly (3+ times on the same task), stop and ask the user for guidance.
+If an agent fails 3+ times on the same task, stop and ask the user for guidance.
 
 ### Step 10: Review and fix
 
-After all coding tasks are completed, review and fix the implemented code in a loop of up to 5 passes.
+#### 10a: Review changes
+Invoke the `plan:review` skill using the `Skill` tool with `START_SHA` as the argument, and check the last line of its report:
+- `No issues found.` → move to Step 11
+- `N issue(s) found.` → go to 10b
+- Anything else → stop and ask the user for guidance
 
-#### Fixer agent prompt
-This skill bundles [fixer-prompt.md](fixer-prompt.md) — a prompt template for the fixer agent. Before each fixer run, read the template and fill in the placeholders:
-- `{{issues}}` — the full review report from `plan:review`
+#### 10b: Fix issues
+Read [fixer-prompt.md](fixer-prompt.md) and fill in the placeholders:
+- `{{issues}}` — the full review report from 10a
 - `{{project_dir}}` — absolute path to the project root
 
-#### Running the loop
-For each pass:
-1. Invoke the `plan:review` skill using the `Skill` tool and read its report.
-   - Ends with `No issues found.` → move to Step 11
-   - Ends with `No issues found, K reviewer(s) returned unparseable output.` → stop and ask the user for guidance
-   - Ends with `N issue(s) found.` → continue with the fixer
-   - Could not run the review (e.g. no reviewer files found) → stop and ask the user for guidance
-2. Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fixer prompt, and check its output:
-   - `BLOCKED: ...` → stop and ask the user for guidance
-   - `Another review pass is recommended.` → run the next pass
-   - `No further review needed.` → move to Step 11
-   - Anything else → stop and ask the user for guidance
-
-   Keep the skipped issues the fixer listed, with their reasons, for the final report.
-
-If the 5th pass still recommends another one, stop and ask the user for guidance.
+Spawn a `general-purpose` subagent using the `Agent` tool with the filled-in fixer prompt. Keep the skipped issues it lists, with their reasons, for the final report. Check its output:
+- `BLOCKED: ...` → stop and ask the user for guidance
+- `Another review pass is recommended.` → go to 10a; if this was the 10th pass, stop and ask the user for guidance instead
+- `No further review needed.` → move to Step 11
+- Anything else → stop and ask the user for guidance
 
 ### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
@@ -145,4 +136,4 @@ If the 5th pass still recommends another one, stop and ask the user for guidance
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing
-- At the start of every reply during the workflow, state the current step, e.g. `**Step 3: Architecture design**`
+- At the start of every reply during the workflow, state the current step, e.g. `**Step 3: Design the architecture**`

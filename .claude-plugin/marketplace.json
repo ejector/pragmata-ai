@@ -7,7 +7,7 @@
     {
       "name": "plan",
       "source": "./plugins/plan",
-      "description": "Plan and execute coding work step by step using autonomous agents, and review branch changes with parallel reviewer agents"
+      "description": "Plan, execute, review coding work step by step using autonomous agents"
     }
   ]
 }

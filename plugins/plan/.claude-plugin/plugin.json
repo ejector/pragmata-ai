@@ -1,7 +1,7 @@
 {
   "name": "plan",
   "version": "0.0.2",
-  "description": "Plan and execute coding work step by step using autonomous agents, and review branch changes with parallel reviewer agents",
+  "description": "Plan, execute, review coding work step by step using autonomous agents",
   "author": {
     "name": "ejector"
   }
