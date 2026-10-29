@@ -20,7 +20,7 @@ If the user already provided a clear description, confirm your understanding and
 - If it's a greenfield project, research best practices and technologies relevant to the task.
 - Summarize what you found for the user.
 
-### Step 3: Architecture design
+### Step 3: Design the architecture
 Design or adapt the architecture for the task:
 - Identify components, data flow, interfaces, directory structure, and technology choices
 - For existing codebases, show how the new work fits into what's already there
@@ -88,46 +88,45 @@ Language, framework, testing tools, relevant details.
 ```
 
 #### 8b: Commit the plan
-Commit the plan file with the message `Add plan: <task name>`.
+Run `git rev-parse HEAD` and save the result as `START_SHA`. Commit the plan file with the message `Add plan: <task name>`.
 
 ### Step 9: Execute via subagents
+Run a subagent with the prompt from [coder-prompt.md](coder-prompt.md) with the placeholders filled in.
 
-#### Coder agent prompt
-This skill bundles [coder-prompt.md](coder-prompt.md) — a prompt template for the coding agent. Before each run, read the template and fill in the placeholders:
-- `{{goal}}` — brief description of the overall goal
-- `{{plan_path}}` — path to the plan file
-- `{{project_dir}}` — absolute path to the project root
-
-#### Running the loop
-For each iteration, spawn a `general-purpose` subagent using the `Agent` tool with the filled-in coder prompt.
-
-After each run, check the agent's output:
+Check the last line of its output:
 - `ALL_TASKS_COMPLETED` → move to Step 10
-- `TASKS_REMAINING` → spawn another agent with the same prompt
+- `TASKS_REMAINING` → repeat Step 9
 - `BLOCKED: ...` → stop and ask the user for guidance
 
-Continue the loop until all tasks are completed or a hard failure occurs. If an agent fails repeatedly (3+ times on the same task), stop and ask the user for guidance.
+If an agent fails 3+ times on the same task, stop and ask the user for guidance.
 
-### Step 10: Review via orchestrator
+### Step 10: Review and fix
 
-After all coding tasks are completed, launch a review orchestrator agent to review the implemented code.
+#### 10a: Review changes
+Run a subagent with the prompt from [review-prompt.md](review-prompt.md) with the placeholders filled in.
 
-Read the orchestrator prompt from [agents/review-orchestrator.md](agents/review-orchestrator.md), fill in the placeholders, and spawn a `general-purpose` subagent using the `Agent` tool with the filled-in prompt:
-- `{{AGENTS_DIR}}` — path to this skill's `agents/` directory. Use the absolute path: the orchestrator runs in a separate context and cannot resolve paths relative to this skill.
-- `{{PROJECT_DIR}}` — absolute path to the root of the project being implemented (the directory containing `{{PLAN_FILE}}`'s `docs/` folder).
+Check the last line of the subagent's output:
+- `No issues found.` → move to Step 11
+- `N issue(s) found.` → go to 10b
+- Anything else → stop and ask the user for guidance
 
-Wait for the orchestrator to finish and read its final message:
-- If it recommends another review pass, run it again. Up to 5 passes in total; if the 5th pass still recommends another one, stop and ask the user for guidance.
-- If it says no further review is needed, continue to Step 11.
-- If it could not run the review (no changes, no reviewer files, ...), stop and ask the user for guidance.
+#### 10b: Fix issues
+Run a subagent with the prompt from [fixer-prompt.md](fixer-prompt.md) with the placeholders filled in. Keep the skipped issues it lists, with their reasons, for the final report.
+
+Check its output:
+- `BLOCKED: ...` → stop and ask the user for guidance
+- `Another review pass is recommended.` → go to 10a; if this was the 10th pass, stop and ask the user for guidance instead
+- `No further review needed.` → move to Step 11
+- Anything else → stop and ask the user for guidance
 
 ### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
-- Report results to the user: what was built, what files were created/modified, and any issues encountered
+- Report results to the user: what was built, what files were created/modified, any issues encountered, and every review issue the fixers skipped, with its reason
 
 ## Important rules
-- Agents run **sequentially**, not in parallel — each builds on prior work
-- Each agent gets the goal, the plan file and the project root, and picks the first unfinished task itself
+- Coder and fixer agents run **sequentially**, not in parallel — each builds on prior work
+- Each fixer agent gets the review report and the project root
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing
+- At the start of every reply during the workflow, state the current step, e.g. `**Step 3: Design the architecture**`
