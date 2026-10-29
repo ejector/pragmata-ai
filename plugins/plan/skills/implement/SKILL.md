@@ -36,7 +36,7 @@ Present the full plan to the user using `AskUserQuestion`. Ask for confirmation 
 
 ### Step 6: Choose the plan file name
 Pick a short kebab-case name for the task (e.g., `add-cli-parser`) and get today's date with `date +%Y-%m-%d`.
-Set `{{PLAN_FILE}}` to `docs/plans/<date>-<task_name>.md` (e.g., `docs/plans/2026-10-02-add-cli-parser.md`).
+Set `PLAN_FILE` to `docs/plans/<date>-<task_name>.md` (e.g., `docs/plans/2026-10-02-add-cli-parser.md`).
 
 ### Step 7: Prepare git repository and branch
 
@@ -55,13 +55,13 @@ Run `git status` to check for untracked files or uncommitted changes.
 
 #### 7c: Create or reuse a feature branch
 Detect the current branch name (`git branch --show-current`).
-- If on the default branch (`main` or `master`): create a new feature branch from the plan filename `{{PLAN_FILE}}` — use the filename without path, extension and date prefix (e.g., `docs/plans/2026-10-02-add-cli-parser.md` → branch `add-cli-parser`). Run `git checkout -b <branch-name>`.
+- If on the default branch (`main` or `master`): create a new feature branch from the plan filename `PLAN_FILE` — use the filename without path, extension and date prefix (e.g., `docs/plans/2026-10-02-add-cli-parser.md` → branch `add-cli-parser`). Run `git checkout -b <branch-name>`.
 - If already on a non-default branch: continue on it — assume the user is intentionally working on this branch.
 
 ### Step 8: Save the plan
 
 #### 8a: Write the plan file
-Create the directory `docs/plans/` if it doesn't exist, then write the approved plan to `{{PLAN_FILE}}` using this format:
+Create the directory `docs/plans/` if it doesn't exist, then write the approved plan to `PLAN_FILE` using this format:
 
 ```markdown
 # Feature Name
@@ -93,7 +93,7 @@ Run `git rev-parse HEAD` and save the result as `START_SHA`. Commit the plan fil
 ### Step 9: Execute via subagents
 Run a subagent with the prompt from [coder-prompt.md](coder-prompt.md) with the placeholders filled in.
 
-Check the last line of its output:
+Check its output:
 - `ALL_TASKS_COMPLETED` → move to Step 10
 - `TASKS_REMAINING` → repeat Step 9
 - `BLOCKED: ...` → stop and ask the user for guidance
@@ -105,7 +105,7 @@ If an agent fails 3+ times on the same task, stop and ask the user for guidance.
 #### 10a: Review changes
 Run a subagent with the prompt from [review-prompt.md](review-prompt.md) with the placeholders filled in.
 
-Check the last line of the subagent's output:
+Check its output:
 - `No issues found.` → move to Step 11
 - `N issue(s) found.` → go to 10b
 - Anything else → stop and ask the user for guidance

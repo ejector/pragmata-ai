@@ -17,7 +17,7 @@ A skill's workflow is an algorithm. Every line of a step tells the agent what to
 - State each fact once. If a limit, condition or transition is defined in one place, do not repeat it elsewhere (e.g., a pass limit lives only in the line that handles the last pass).
 
 ### Branching on output
-An agent whose output is branched on ends with exactly one marker line, with nothing after it. The step checks the last line of the output.
+An agent whose output is branched on ends with exactly one marker line, with nothing after it.
 
 List every outcome as `- <exact output> → <action>`, with outputs in backticks, and cover the rest explicitly:
 ```
@@ -34,7 +34,7 @@ Reference the file as a link and let the agent fill the placeholders from contex
 ```
 Run a subagent with the prompt from [<name>-prompt.md](<name>-prompt.md) with the placeholders filled in.
 ```
-Placeholders use `{{name}}`; plain variables in step text use bare names (`OUTPUT_DIR`).
+Plain variables in step text use bare uppercase names (`OUTPUT_DIR`). A placeholder is the name of the variable it takes, in braces (`{{OUTPUT_DIR}}`).
 
 ## Writing agent prompts
 - Ask agents to check state by re-reading files, not from memory (`Re-read <file> and check …`).
