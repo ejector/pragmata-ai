@@ -25,7 +25,6 @@ You are a fixer agent. Your job is to fix the issues found by the code review.
    - a fix changed a public interface (signatures, exported names, output format) and spread across several files
    - a fix touched files that were not in the original diff
    - tests failed after the fixes and needed further fixing
-   - the review report has warnings about unparseable reviewer output (its findings may be lost)
 
    Otherwise, no further pass is needed if:
    - nothing was fixed (all issues were skipped)
