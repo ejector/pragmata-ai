@@ -36,6 +36,19 @@ Run a subagent with the prompt from [<name>-prompt.md](<name>-prompt.md) with th
 ```
 Plain variables in step text use bare uppercase names (`OUTPUT_DIR`). A placeholder is the name of the variable it takes, in braces (`{{OUTPUT_DIR}}`).
 
+## Writing skills and prompts
+- Assume the model is smart: write only what it doesn't already know. Check each line: would the model do this anyway?
+- Match specificity to fragility: exact commands where a mistake is costly (git, commits, marker lines); general direction where many approaches work (reviewing, designing).
+- Give the reason behind a rule instead of a bare MUST or NEVER; the model generalizes from the reason. Avoid emphatic wording: current models overreact to it.
+- Say what to do, not what not to do.
+- Show an output format with an example rather than describing its fields.
+- Use one term per concept across a skill and its templates.
+- Give one default instead of a list of alternatives.
+- Wrap inserted data (reports, user text) in XML tags so it is not mistaken for instructions.
+- Write a skill's `description` in the third person: what it does and when to use it. The model picks skills by it.
+- Keep `SKILL.md` under 500 lines. Move details to files linked directly from it, one level deep.
+- Start minimal. Add a line only when a test run shows a failure it fixes, and remove lines that runs show are unneeded.
+
 ## Writing agent prompts
 - Ask agents to check state by re-reading files, not from memory (`Re-read <file> and check …`).
 - Tell agents where to put explanations, or they append them to the marker line.
@@ -49,9 +62,9 @@ Plain variables in step text use bare uppercase names (`OUTPUT_DIR`). A placehol
 
 ## Testing a skill
 - Do not test on the installed plugin. Copy the plugin to the scratchpad, rename it in its `plugin.json` (e.g., `<plugin>-dev`), and replace `<plugin>:` with `<plugin>-dev:` in its files.
-- Run the skill on a small scratch project, on Sonnet, so that ambiguous wording shows up:
+- Run the skill on a small scratch project, on every model it will run on: a weaker model shows missing guidance, a stronger one shows over-explanation:
   ```
-  claude -p "<prompt>" --model sonnet --plugin-dir <copy> --allowedTools <tools> --output-format stream-json --verbose > run.jsonl
+  claude -p "<prompt>" --model <model> --plugin-dir <copy> --allowedTools <tools> --output-format stream-json --verbose > run.jsonl
   ```
   Never use `--dangerously-skip-permissions`.
 - Read `run.jsonl`: events with `parent_tool_use_id` come from subagents; `Agent` tool calls hold the filled-in prompts; the `result` event holds `total_cost_usd`.
