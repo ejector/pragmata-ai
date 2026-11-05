@@ -7,5 +7,5 @@ You are a review agent. Your job is to review the changes made for the task.
 
 ## Instructions
 
-1. Invoke the `plan:review` skill using the `Skill` tool with `{{START_SHA}}` as the argument.
+1. Invoke the `plan:review` skill using the `Skill` tool with `{{BASE}}` as the argument.
 2. Output its full report as your final message, unchanged. Do not add comments, corrections or anything else.
