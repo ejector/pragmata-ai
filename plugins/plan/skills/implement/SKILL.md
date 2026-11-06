@@ -15,6 +15,8 @@ Ask the user what they want to build or implement. Clarify:
 
 If the user already provided a clear description, confirm your understanding and move on.
 
+Save the confirmed description as `GOAL`.
+
 ### Step 2: Explore context
 - If there's an existing codebase, use **Explore agents** to understand relevant code, patterns, architecture, and conventions.
 - If it's a greenfield project, research best practices and technologies relevant to the task.
@@ -41,7 +43,7 @@ Set `PLAN_FILE` to `docs/plans/<date>-<task_name>.md` (e.g., `docs/plans/2026-10
 ### Step 7: Prepare git repository and branch
 
 #### 7a: Ensure git repository exists
-Check if the current directory is a git repository (`git rev-parse --is-inside-work-tree`).
+Run `pwd` and save the result as `PROJECT_DIR`. Check if the current directory is a git repository (`git rev-parse --is-inside-work-tree`).
 If not, initialize one:
 1. Run `git init`
 2. Analyze the project files and create a `.gitignore` appropriate for the project (languages, frameworks, build artifacts, IDE files, etc.)
@@ -77,28 +79,24 @@ Language, framework, testing tools, relevant details.
 ### Task 1: Set up module
 - [ ] Create the main file with core functions
 - [ ] Add error handling
+- [ ] Test the functions and error cases
 
 ### Task 2: Add CLI
 - [ ] Add argparse interface
 - [ ] Print results to stdout
-
-### Task 3: Write tests
-- [ ] Test all functions
-- [ ] Test error cases
+- [ ] Test the CLI
 ```
 
 #### 8b: Commit the plan
 Run `git rev-parse HEAD` and save the result as `START_SHA`. Commit the plan file with the message `Add plan: <task name>`.
 
-### Step 9: Execute via subagents
-Run a subagent with the prompt from [coder-prompt.md](coder-prompt.md) with the placeholders filled in.
+### Step 9: Implement the next task
+Run `git rev-parse HEAD` and save the result as `TASK_SHA`. Run a subagent with the prompt from [coder-prompt.md](coder-prompt.md) with the placeholders filled in.
 
 Check its output:
-- `ALL_TASKS_COMPLETED` → move to Step 10
-- `TASKS_REMAINING` → repeat Step 9
+- `TASKS_REMAINING` or `ALL_TASKS_COMPLETED` → save it as `CODER_RESULT`, set `BASE` to `TASK_SHA`, move to Step 10
 - `BLOCKED: ...` → stop and ask the user for guidance
-
-If an agent fails 3+ times on the same task, stop and ask the user for guidance.
+- Anything else → repeat Step 9; if this was the 5th failure on the same task, stop and ask the user for guidance instead
 
 ### Step 10: Review and fix
 
@@ -106,8 +104,8 @@ If an agent fails 3+ times on the same task, stop and ask the user for guidance.
 Run a subagent with the prompt from [review-prompt.md](review-prompt.md) with the placeholders filled in.
 
 Check its output:
-- `No issues found.` → move to Step 11
-- `N issue(s) found.` → go to 10b
+- `No issues found.` → go to 10c
+- `N issue(s) found.` → save its report as `ISSUES`, go to 10b
 - Anything else → stop and ask the user for guidance
 
 #### 10b: Fix issues
@@ -115,9 +113,14 @@ Run a subagent with the prompt from [fixer-prompt.md](fixer-prompt.md) with the 
 
 Check its output:
 - `BLOCKED: ...` → stop and ask the user for guidance
-- `Another review pass is recommended.` → go to 10a; if this was the 10th pass, stop and ask the user for guidance instead
-- `No further review needed.` → move to Step 11
+- `Another review pass is recommended.` → if `BASE` is `TASK_SHA`, go to 10c; otherwise go to 10a; if this was the 10th pass since entering Step 10, stop and ask the user for guidance instead
+- `No further review needed.` → go to 10c
 - Anything else → stop and ask the user for guidance
+
+#### 10c: Choose what comes next
+- `BASE` is `TASK_SHA`, `CODER_RESULT` is `TASKS_REMAINING` → move to Step 9
+- `BASE` is `TASK_SHA`, `CODER_RESULT` is `ALL_TASKS_COMPLETED` → set `BASE` to `START_SHA`, repeat Step 10
+- `BASE` is `START_SHA` → move to Step 11
 
 ### Step 11: Verify
 - Read the plan file to confirm all checkboxes are checked
@@ -125,7 +128,6 @@ Check its output:
 
 ## Important rules
 - Coder and fixer agents run **sequentially**, not in parallel — each builds on prior work
-- Each fixer agent gets the review report and the project root
 - **Always** get user approval before starting execution (Step 5)
 - The plan file is the source of truth for progress — agents read and update it directly
 - If something goes wrong, stop and ask the user rather than guessing

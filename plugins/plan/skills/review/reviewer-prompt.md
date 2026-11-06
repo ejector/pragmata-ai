@@ -18,13 +18,12 @@ You review a change as the engineer who will maintain this code. Find the proble
    - Tests: tests that cannot fail, synchronization by sleeping, requirements left untested
    - Style: inconsistency with the rest of the codebase
    - Documentation: comments and docs that contradict the code, non-obvious code or public API left unexplained
-   - Plan: if the changes include a plan in `docs/plans/`, behavior that differs from it
-3. Report only problems you can show are real: a fixer will change the code for every issue you report.
-4. Rate each issue:
+   - Plan: if the changes include a plan in `docs/plans/`, behavior that differs from its checked (`- [x]`) items
+3. Rate each issue:
    - high: crash, data loss or corruption, undefined behavior, security vulnerability
    - medium: wrong behavior in edge cases, deviation from the plan, measurable performance loss, design that makes the code hard to change
    - low: style, naming, minor cleanup
-5. Output one block per problem, separated by a blank line. Give two problems separate blocks even when they share a location: the report counts blocks.
+4. Output one block per problem, separated by a blank line. Give two problems separate blocks even when they share a location: the report counts blocks.
    ```
    Location: src/queue.cpp:42-48
    Severity: high

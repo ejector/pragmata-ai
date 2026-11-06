@@ -27,7 +27,7 @@ Run `git diff --name-only BASE...HEAD` to check if there are changes. If the out
 
 ### Step 2: Run the reviewer
 
-Run a subagent with the prompt from [reviewer-prompt.md](reviewer-prompt.md) with the placeholders filled in.
+Run a subagent on the `opus` model with the prompt from [reviewer-prompt.md](reviewer-prompt.md) with the placeholders filled in.
 
 ### Step 3: Report
 
