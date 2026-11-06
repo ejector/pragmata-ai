@@ -113,7 +113,7 @@ Run a subagent with the prompt from [fixer-prompt.md](fixer-prompt.md) with the 
 
 Check its output:
 - `BLOCKED: ...` → stop and ask the user for guidance
-- `Another review pass is recommended.` → go to 10a; if this was the 10th pass since entering Step 10, stop and ask the user for guidance instead
+- `Another review pass is recommended.` → if `BASE` is `TASK_SHA`, go to 10c; otherwise go to 10a; if this was the 10th pass since entering Step 10, stop and ask the user for guidance instead
 - `No further review needed.` → go to 10c
 - Anything else → stop and ask the user for guidance
 
